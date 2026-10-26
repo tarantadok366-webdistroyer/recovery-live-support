@@ -3,62 +3,380 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Recovery Live Support</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#080d18">
+<title>Recovery Live Support | Case Console</title>
 <style>
-:root{color-scheme:light;--bg:#f4f6fa;--card:#fff;--ink:#172033;--muted:#687386;--line:#e1e6ef;--accent:#2463eb;--green:#16865c;--red:#c83d4b}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,Arial,sans-serif}
-header{background:#111827;color:white;padding:20px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-h1{font-size:20px;margin:0}header p{margin:4px 0 0;color:#cbd5e1;font-size:13px}
-main{max-width:1100px;margin:26px auto;padding:0 16px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 4px 18px #15264a0a}
-h2{font-size:17px;margin:0 0 14px}label{display:block;font-size:13px;color:var(--muted);margin:10px 0 5px}
-input,select,button{font:inherit;border-radius:9px;padding:11px 12px}input,select{width:100%;border:1px solid var(--line);background:white;color:var(--ink)}
-button{border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer}button.secondary{background:#e9eef8;color:#23314b}button.danger{background:var(--red)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.small{font-size:13px;color:var(--muted)}.hidden{display:none!important}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}.stat{border:1px solid var(--line);border-radius:12px;padding:15px;background:#fbfcff}.stat strong{display:block;font-size:25px}.stat span{font-size:12px;color:var(--muted)}
-.record{border:1px solid var(--line);border-radius:12px;padding:15px;margin-top:12px}.record-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.pill{font-size:12px;background:#e8f7ef;color:#137448;border-radius:99px;padding:5px 9px}.pill.pending{background:#fff4d8;color:#805b00}.pill.issue{background:#ffe8eb;color:#a22636}
-a{color:var(--accent);overflow-wrap:anywhere}footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
+:root {
+  color-scheme: dark;
+  --bg:#080d18;
+  --panel:#111a2b;
+  --ink:#edf3ff;
+  --muted:#93a3bc;
+  --line:#26354d;
+  --accent:#5b8cff;
+  --green:#35d39a;
+  --amber:#f5c15d;
+  --red:#ff6b7a;
+}
+*{box-sizing:border-box}
+body {
+  margin:0;
+  background:radial-gradient(ellipse at top,#14223b 0,#080d18 48%);
+  color:var(--ink);
+  font:14px/1.5 system-ui,-apple-system,Segoe UI,Arial,sans-serif;
+  min-height:100vh;
+}
+header {
+  background:#080d18ef;
+  border-bottom:1px solid var(--line);
+  padding:18px clamp(16px,4vw,48px);
+  display:flex;justify-content:space-between;
+  align-items:center;gap:16px;flex-wrap:wrap;
+  position:sticky;top:0;z-index:5;
+  backdrop-filter:blur(16px);
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo {
+  width:42px;height:42px;border-radius:13px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#477cff,#6a5cff);
+  font-weight:900;font-size:18px;
+}
+h1{font-size:18px;margin:0}
+header p{margin:3px 0 0;color:#93a3bc;font-size:12px}
+.session {
+  color:var(--muted);font-size:12px;
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:99px;padding:8px 12px;
+}
+main{max-width:1200px;margin:28px auto;padding:0 16px 30px}
+.card {
+  background:linear-gradient(145deg,#121d30,#0e1727);
+  border:1px solid var(--line);border-radius:17px;
+  padding:20px;margin-bottom:18px;
+  box-shadow:0 16px 40px #0005;
+}
+.card-head {
+  display:flex;justify-content:space-between;
+  align-items:flex-start;gap:12px;flex-wrap:wrap;
+  margin-bottom:15px;
+}
+h2{font-size:16px;margin:0 0 5px}
+label {
+  display:block;font-size:12px;color:#a9b8cf;
+  margin:12px 0 6px;
+}
+input,select,textarea,button {
+  font:inherit;border-radius:10px;padding:11px 12px;
+}
+input,select,textarea {
+  width:100%;border:1px solid #30405b;
+  background:#091221;color:var(--ink);outline:none;
+}
+input:focus,select:focus,textarea:focus {
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px #5b8cff20;
+}
+input::placeholder,textarea::placeholder{color:#61718a}
+textarea{resize:vertical;min-height:82px}
+button {
+  border:1px solid transparent;
+  background:linear-gradient(135deg,#477cff,#6a5cff);
+  color:white;font-weight:700;cursor:pointer;
+}
+button:hover{filter:brightness(1.1)}
+button.secondary {
+  background:#1b2940;border-color:#30405b;color:#dce7fa;
+}
+button.danger {
+  background:#3a1825;border-color:#703044;color:#ff9aa6;
+}
+.grid {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+}
+.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.hidden{display:none!important}
+.small{font-size:12px;color:var(--muted)}
+.stats {
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;margin-bottom:18px;
+}
+.stat {
+  background:linear-gradient(145deg,#15223a,#101827);
+  border:1px solid var(--line);border-radius:15px;padding:16px;
+}
+.stat strong{display:block;font-size:27px}
+.stat span{font-size:11px;color:var(--muted)}
+.dot {
+  display:inline-block;width:7px;height:7px;
+  border-radius:50%;background:var(--accent);
+  margin-right:6px;
+}
+.section-label {
+  display:flex;align-items:center;gap:9px;
+  margin:18px 0 2px;color:#d8e4f7;
+  font-size:12px;font-weight:800;
+  text-transform:uppercase;letter-spacing:.08em;
+}
+.section-label:before {
+  content:"";width:4px;height:15px;border-radius:4px;
+  background:var(--accent);
+}
+.record {
+  background:#0a1322;border:1px solid #263750;
+  border-radius:14px;padding:16px;margin-top:12px;
+}
+.record-top {
+  display:flex;justify-content:space-between;
+  gap:12px;align-items:flex-start;flex-wrap:wrap;
+}
+.record-title{font-size:15px;font-weight:750;overflow-wrap:anywhere}
+.refline{font-size:11px;color:var(--muted);margin-top:3px}
+.pill {
+  display:inline-flex;align-items:center;
+  font-size:11px;font-weight:700;
+  background:#123a30;color:#6ee7b7;
+  border:1px solid #1e5c4b;border-radius:99px;
+  padding:5px 9px;white-space:nowrap;
+}
+.pill.pending{background:#3c3017;color:#f8d77b;border-color:#6d5524}
+.pill.issue{background:#401d2a;color:#ff9aa6;border-color:#733447}
+.pill.neutral{background:#1d2b42;color:#c2d0e6;border-color:#344761}
+.details {
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;margin:15px 0;
+}
+.detail {
+  padding:10px 11px;background:#101c2e;
+  border:1px solid #22334b;border-radius:10px;min-width:0;
+}
+.detail span {
+  display:block;font-size:10px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;
+}
+.detail strong {
+  display:block;font-size:12px;overflow-wrap:anywhere;
+  font-weight:600;
+}
+.record p{margin:9px 0}
+.record a{color:#83aaff;overflow-wrap:anywhere}
+.record-actions {
+  display:grid;grid-template-columns:minmax(0,1fr) auto auto;
+  gap:8px;align-items:end;margin-top:12px;
+}
+.record-actions label{margin-top:0}
+.empty {
+  border:1px dashed #30405b;border-radius:12px;
+  text-align:center;padding:28px;color:var(--muted);
+}
+.empty strong{display:block;color:#dce7fa;margin-bottom:4px}
+.notice {
+  padding:11px 13px;border:1px solid #5a4a24;
+  background:#292315;border-radius:10px;
+  color:#f2d68a;font-size:12px;margin-top:12px;
+}
+.searchbar{max-width:360px}
+.activity-item {
+  display:grid;grid-template-columns:10px 1fr;gap:10px;
+  padding:12px 0;border-bottom:1px solid #233149;
+}
+.activity-item:last-child{border-bottom:0}
+.activity-dot {
+  width:8px;height:8px;border-radius:50%;
+  background:var(--accent);margin-top:6px;
+}
+.activity-item strong{font-size:12px}
+.activity-item p{margin:3px 0;color:#c2cfe3;font-size:12px}
+footer{text-align:center;color:#72839d;font-size:11px;padding:12px 16px 28px}
+@media(max-width:760px) {
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .details{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .record-actions{grid-template-columns:1fr 1fr}
+  .record-actions select{grid-column:1/-1}
+  .searchbar{max-width:none;width:100%}
+}
+@media(max-width:460px) {
+  .grid,.grid.two{grid-template-columns:1fr}
+  .card{padding:15px}
+  .details{grid-template-columns:1fr 1fr}
+  .record-actions{grid-template-columns:1fr}
+  .record-actions select{grid-column:auto}
+  .stat strong{font-size:23px}
+}
 </style>
 </head>
 <body>
-<header><div><h1>Recovery Live Support</h1><p>Shared case status dashboard</p></div><div id="session" class="small">Signed out</div></header>
+<header>
+  <div class="brand">
+    <div class="logo">RS</div>
+    <div>
+      <h1>Recovery Live Support</h1>
+      <p>Case management console · manual status tracking</p>
+    </div>
+  </div>
+  <div id="session" class="session">Signed out</div>
+</header>
+
 <main>
 <section id="login" class="card">
-<h2>Admin sign in</h2>
-<p class="small">Use the dashboard account created in Firebase Authentication. This is not your Facebook login.</p>
-<label>Email</label><input id="email" type="email" autocomplete="username" placeholder="Admin email">
-<label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Dashboard password">
-<div class="row" style="margin-top:14px"><button id="signIn">Sign in</button><button id="signOut" class="secondary hidden">Sign out</button></div>
-<p id="authMessage" role="status" class="small"></p>
+  <div class="card-head">
+    <div>
+      <h2>Admin sign in</h2>
+      <div class="small">Sign in with the dashboard account created in Firebase Authentication.</div>
+    </div>
+  </div>
+  <div class="grid two">
+    <div>
+      <label for="email">Admin email</label>
+      <input id="email" type="email" autocomplete="username" placeholder="admin@example.com">
+    </div>
+    <div>
+      <label for="password">Dashboard password</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="Enter password">
+    </div>
+  </div>
+  <div class="row" style="margin-top:15px">
+    <button id="signIn">Sign in securely</button>
+    <button id="signOut" class="secondary hidden">Sign out</button>
+  </div>
+  <p id="authMessage" role="status" class="small"></p>
 </section>
+
 <section id="app" class="hidden">
-<div class="stats">
-<div class="stat"><strong id="total">0</strong><span>Total records</span></div>
-<div class="stat"><strong id="progress">0</strong><span>In progress</span></div>
-<div class="stat"><strong id="recovered">0</strong><span>Marked recovered</span></div>
-</div>
-<section class="card" style="margin-top:18px">
-<h2>Add a case record</h2>
-<form id="recordForm">
-<div class="grid">
-<div><label>Display name / reference</label><input id="caseName" maxlength="100" required placeholder="Case reference"></div>
-<div><label>Public profile URL (optional)</label><input id="profileUrl" type="url" placeholder="https://www.facebook.com/..."></div>
-<div><label>Status</label><select id="caseStatus"><option>Pending</option><option>In progress</option><option>Recovered (manually verified)</option><option>Unable to verify</option><option>Closed</option></select></div>
-</div>
-<label>Notes (do not enter passwords or verification codes)</label><input id="caseNotes" maxlength="500" placeholder="Brief case notes">
-<div style="margin-top:14px"><button type="submit">Add record</button></div>
-</form>
-<p id="dataMessage" role="status" class="small"></p>
-</section>
-<section class="card"><h2>Case records</h2><div id="records"><p class="small">Loading records…</p></div></section>
-<section class="card"><h2>Recent activity</h2><div id="history"><p class="small">Loading activity…</p></div></section>
+  <div class="stats">
+    <div class="stat"><span><i class="dot"></i>Total records</span><strong id="total">0</strong></div>
+    <div class="stat"><span><i class="dot" style="background:var(--amber)"></i>In progress</span><strong id="progress">0</strong></div>
+    <div class="stat"><span><i class="dot" style="background:var(--green)"></i>Marked recovered</span><strong id="recovered">0</strong></div>
+    <div class="stat"><span><i class="dot" style="background:var(--red)"></i>Needs review</span><strong id="review">0</strong></div>
+  </div>
+
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2>Add account case</h2>
+        <div class="small">Enter only non-sensitive reference details. Never store passwords, OTPs, or recovery codes.</div>
+      </div>
+    </div>
+    <form id="recordForm">
+      <div class="section-label">01 · Account identification</div>
+      <div class="grid">
+        <div>
+          <label for="caseName">Display name / case reference *</label>
+          <input id="caseName" maxlength="100" required placeholder="e.g. CASE-1024">
+        </div>
+        <div>
+          <label for="platform">Platform</label>
+          <select id="platform">
+            <option>Facebook</option><option>Instagram</option>
+            <option>Google</option><option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="caseType">Case type</label>
+          <select id="caseType">
+            <option>Account recovery</option>
+            <option>Disabled account appeal</option>
+            <option>Login/access issue</option>
+            <option>Security review</option><option>Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="profileUrl">Public profile / official case URL</label>
+          <input id="profileUrl" type="url" placeholder="https://...">
+        </div>
+        <div>
+          <label for="caseStatus">Current status</label>
+          <select id="caseStatus">
+            <option>Pending</option><option>In progress</option>
+            <option>Needs review</option>
+            <option>Recovered (manually verified)</option>
+            <option>Unable to verify</option><option>Closed</option>
+          </select>
+        </div>
+        <div>
+          <label for="priority">Priority</label>
+          <select id="priority">
+            <option>Normal</option><option>High</option>
+            <option>Urgent</option><option>Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section-label">02 · Timeline and follow-up</div>
+      <div class="grid">
+        <div>
+          <label for="dateOpened">Date opened</label>
+          <input id="dateOpened" type="date">
+        </div>
+        <div>
+          <label for="nextFollowUp">Next follow-up date</label>
+          <input id="nextFollowUp" type="date">
+        </div>
+        <div>
+          <label for="owner">Assigned to / case owner</label>
+          <input id="owner" maxlength="100" placeholder="Team member or self">
+        </div>
+      </div>
+
+      <div class="section-label">03 · Notes</div>
+      <label for="caseNotes">Case summary / latest action</label>
+      <textarea id="caseNotes" maxlength="1000" placeholder="Record the latest legitimate action, response received, and next step. Do not include secrets."></textarea>
+
+      <div class="row" style="margin-top:15px">
+        <button type="submit">＋ Add case record</button>
+        <button type="reset" class="secondary">Clear form</button>
+      </div>
+    </form>
+    <p id="dataMessage" role="status" class="small"></p>
+    <div class="notice">Privacy reminder: keep records limited to information you are authorized to manage. Recovery status is not automatically verified by this dashboard.</div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2>Account case records</h2>
+        <div class="small">Identification, status, timeline, and next action for each case.</div>
+      </div>
+      <div class="searchbar">
+        <input id="searchRecords" type="search" placeholder="Search case, platform, status…">
+      </div>
+    </div>
+    <div id="records"><div class="empty">Loading records…</div></div>
+  </section>
+
+  <section class="card">
+    <div class="card-head">
+      <div>
+        <h2>Recent activity</h2>
+        <div class="small">Latest 30 dashboard changes</div>
+      </div>
+    </div>
+    <div id="history"><p class="small">Loading activity…</p></div>
+  </section>
 </section>
 </main>
-<footer>Shared records update across signed-in devices. Facebook recovery status is not automatically detected; statuses must be manually verified.</footer>
+
+<footer>
+  Recovery Live Support · Shared case records · Use official platform recovery channels and verify outcomes manually.
+</footer>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, onSnapshot, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
+import {
+  getAuth, onAuthStateChanged,
+  signInWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import {
+  getFirestore, collection, doc, setDoc, addDoc,
+  deleteDoc, onSnapshot, serverTimestamp, query,
+  orderBy, limit
+} from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAbZZ1AqzgRiaykmzqf_l8hpO-_WuxhVeY",
@@ -69,114 +387,369 @@ const firebaseConfig = {
   appId: "1:25419972015:web:035bd8d7f7dacfda06435a",
   measurementId: "G-1PHQWDB811"
 };
+
+// Dashboard sign-in allowlist; Firebase rules must also enforce authorization.
 const ADMIN_EMAIL = "tarantadok366@gmail.com".toLowerCase();
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const appFirebase = initializeApp(firebaseConfig);
+const auth = getAuth(appFirebase);
+const db = getFirestore(appFirebase);
+
 const $ = id => document.getElementById(id);
-let stopRecords = null, stopHistory = null, currentUser = null;
-const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const statusClass = s => s.startsWith("Recovered") ? "" : s === "In progress" ? "pending" : "issue";
-const showMessage = (id, msg) => { $(id).textContent = msg; };
-function timeLabel(ts) {
-  if (!ts?.toDate) return "Just now";
-  return ts.toDate().toLocaleString();
+let stopRecords = null;
+let stopHistory = null;
+let currentUser = null;
+let cachedRecords = [];
+
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;", "<":"&lt;", ">":"&gt;",
+  '"':"&quot;", "'":"&#39;"
+}[c]));
+
+const statusClass = status =>
+  status === "Recovered (manually verified)" ? "" :
+  ["In progress","Pending"].includes(status) ? "pending" :
+  ["Needs review","Unable to verify"].includes(status) ? "issue" : "neutral";
+
+const showMessage = (id, message) => {
+  $(id).textContent = message;
+};
+
+function timeLabel(timestamp) {
+  if (!timestamp?.toDate) return "Just now";
+  return timestamp.toDate().toLocaleString();
 }
+
+function dateLabel(value) {
+  if (!value) return "Not set";
+  const date = new Date(value + "T12:00:00");
+  return Number.isNaN(date.getTime()) ? value :
+    date.toLocaleDateString(undefined, {
+      year:"numeric", month:"short", day:"numeric"
+    });
+}
+
 async function logActivity(action, details) {
   await addDoc(collection(db, "history"), {
-    action, details, actor: currentUser.email, createdAt: serverTimestamp()
+    action,
+    details,
+    actor: currentUser.email,
+    createdAt: serverTimestamp()
   });
 }
+
+function renderRecords() {
+  const term = $("searchRecords").value.trim().toLowerCase();
+  const records = cachedRecords.filter(record =>
+    [
+      record.name, record.platform, record.caseType,
+      record.status, record.priority, record.owner, record.notes
+    ].join(" ").toLowerCase().includes(term)
+  );
+
+  $("records").innerHTML = records.length ? records.map(record => `
+    <article class="record" data-record="${esc(record.id)}">
+      <div class="record-top">
+        <div>
+          <div class="record-title">${esc(record.name || "Unnamed case")}</div>
+          <div class="refline">
+            ${esc(record.platform || "Platform not set")} ·
+            ${esc(record.caseType || "Case type not set")} ·
+            ID ${esc(record.id.slice(0,8))}
+          </div>
+        </div>
+        <span class="pill ${statusClass(record.status || "Pending")}">
+          ${esc(record.status || "Pending")}
+        </span>
+      </div>
+
+      <div class="details">
+        <div class="detail">
+          <span>Priority</span>
+          <strong>${esc(record.priority || "Normal")}</strong>
+        </div>
+        <div class="detail">
+          <span>Date opened</span>
+          <strong>${esc(dateLabel(record.dateOpened))}</strong>
+        </div>
+        <div class="detail">
+          <span>Next follow-up</span>
+          <strong>${esc(dateLabel(record.nextFollowUp))}</strong>
+        </div>
+        <div class="detail">
+          <span>Assigned to</span>
+          <strong>${esc(record.owner || "Unassigned")}</strong>
+        </div>
+        <div class="detail">
+          <span>Last updated</span>
+          <strong>${esc(timeLabel(record.updatedAt))}</strong>
+        </div>
+        <div class="detail">
+          <span>Updated by</span>
+          <strong>${esc(record.updatedBy || "—")}</strong>
+        </div>
+      </div>
+
+      ${record.profileUrl ? `
+        <p>
+          <a href="${esc(record.profileUrl)}"
+             target="_blank" rel="noopener noreferrer">
+             Open public profile / case link ↗
+          </a>
+        </p>` : ""}
+
+      ${record.notes ? `
+        <p>
+          <strong style="font-size:11px;color:#a9b8cf">LATEST NOTE</strong><br>
+          ${esc(record.notes)}
+        </p>` : ""}
+
+      <div class="record-actions">
+        <div>
+          <label for="status-${esc(record.id)}">Update status</label>
+          <select id="status-${esc(record.id)}">
+            ${[
+              "Pending", "In progress", "Needs review",
+              "Recovered (manually verified)",
+              "Unable to verify", "Closed"
+            ].map(status => `
+              <option ${status === (record.status || "Pending") ? "selected" : ""}>
+                ${esc(status)}
+              </option>`).join("")}
+          </select>
+        </div>
+        <button data-update="${esc(record.id)}" class="secondary">
+          Save status
+        </button>
+        <button data-delete="${esc(record.id)}" class="danger">
+          Delete
+        </button>
+      </div>
+    </article>
+  `).join("") : `
+    <div class="empty">
+      <strong>No matching case records</strong>
+      Try another search or add a new case above.
+    </div>`;
+}
+
 $("signIn").addEventListener("click", async () => {
   showMessage("authMessage", "");
   const email = $("email").value.trim().toLowerCase();
-  if (email !== ADMIN_EMAIL) return showMessage("authMessage", "This email is not configured as the dashboard admin.");
+
+  if (email !== ADMIN_EMAIL) {
+    return showMessage(
+      "authMessage",
+      "This email is not configured as the dashboard admin."
+    );
+  }
+
   try {
-    await signInWithEmailAndPassword(auth, email, $("password").value);
+    await signInWithEmailAndPassword(
+      auth, email, $("password").value
+    );
     $("password").value = "";
-  } catch (e) { showMessage("authMessage", "Sign-in failed. Check the dashboard email/password and Firebase Authentication setup."); }
+  } catch (error) {
+    showMessage(
+      "authMessage",
+      "Sign-in failed. Check the dashboard email/password and Firebase Authentication setup."
+    );
+  }
 });
+
+$("password").addEventListener("keydown", event => {
+  if (event.key === "Enter") $("signIn").click();
+});
+
 $("signOut").addEventListener("click", () => signOut(auth));
-$("recordForm").addEventListener("submit", async e => {
-  e.preventDefault();
+$("searchRecords").addEventListener("input", renderRecords);
+
+$("recordForm").addEventListener("submit", async event => {
+  event.preventDefault();
   if (!currentUser) return;
+
   try {
     const name = $("caseName").value.trim();
     const url = $("profileUrl").value.trim();
-    if (url && !/^https:\/\/(www\.)?facebook\.com\//i.test(url)) {
-      return showMessage("dataMessage", "Use a public Facebook profile URL or leave this field blank.");
+
+    if (url && !/^https:\/\//i.test(url)) {
+      return showMessage(
+        "dataMessage",
+        "Use an HTTPS public profile or official case URL, or leave the field blank."
+      );
     }
+
     const ref = doc(collection(db, "dashboard"));
     const status = $("caseStatus").value;
-    await setDoc(ref, {
-      name, profileUrl: url, status, notes: $("caseNotes").value.trim(),
-      updatedAt: serverTimestamp(), updatedBy: currentUser.email
-    });
-    await logActivity("Record added", `${name} — ${status}`);
+
+    const data = {
+      name,
+      profileUrl: url,
+      platform: $("platform").value,
+      caseType: $("caseType").value,
+      status,
+      priority: $("priority").value,
+      dateOpened: $("dateOpened").value,
+      nextFollowUp: $("nextFollowUp").value,
+      owner: $("owner").value.trim(),
+      notes: $("caseNotes").value.trim(),
+      updatedAt: serverTimestamp(),
+      updatedBy: currentUser.email
+    };
+
+    await setDoc(ref, data);
+    await logActivity(
+      "Case added",
+      `${name} — ${status} — ${data.platform}`
+    );
+
     $("recordForm").reset();
-    showMessage("dataMessage", "Record added.");
-  } catch (e) { showMessage("dataMessage", "Could not save. Check Firestore rules and connection."); }
+    showMessage("dataMessage", "Case record added successfully.");
+  } catch (error) {
+    showMessage(
+      "dataMessage",
+      "Could not save. Check Firestore rules and connection."
+    );
+  }
 });
+
+$("records").addEventListener("click", async event => {
+  const updateId = event.target.dataset.update;
+  const deleteId = event.target.dataset.delete;
+
+  if (updateId) {
+    const record = cachedRecords.find(item => item.id === updateId);
+    if (!record || !currentUser) return;
+
+    const status = $(`status-${updateId}`).value;
+
+    try {
+      await setDoc(
+        doc(db, "dashboard", updateId),
+        {
+          status,
+          updatedAt: serverTimestamp(),
+          updatedBy: currentUser.email
+        },
+        { merge: true }
+      );
+
+      await logActivity(
+        "Status changed",
+        `${record.name} — ${status}`
+      );
+
+      showMessage("dataMessage", "Status updated.");
+    } catch (error) {
+      showMessage(
+        "dataMessage",
+        "Update failed. Check Firestore rules and connectivity."
+      );
+    }
+  }
+
+  if (deleteId && currentUser &&
+      confirm("Delete this case record? This cannot be undone.")) {
+    try {
+      const record = cachedRecords.find(item => item.id === deleteId);
+
+      await deleteDoc(doc(db, "dashboard", deleteId));
+      await logActivity(
+        "Case deleted",
+        record?.name || deleteId
+      );
+
+      showMessage("dataMessage", "Case record deleted.");
+    } catch (error) {
+      showMessage("dataMessage", "Delete failed. Check rules.");
+    }
+  }
+});
+
 function watchData() {
   if (stopRecords) stopRecords();
   if (stopHistory) stopHistory();
-  stopRecords = onSnapshot(query(collection(db, "dashboard"), orderBy("updatedAt", "desc")), snap => {
-    const docs = snap.docs.map(d => ({id:d.id,...d.data()}));
-    $("total").textContent = docs.length;
-    $("progress").textContent = docs.filter(x => x.status === "In progress").length;
-    $("recovered").textContent = docs.filter(x => x.status.startsWith("Recovered")).length;
-    $("records").innerHTML = docs.length ? docs.map(r => `
-      <article class="record">
-        <div class="record-top"><strong>${esc(r.name)}</strong><span class="pill ${statusClass(r.status)}">${esc(r.status)}</span></div>
-        ${r.profileUrl ? `<p><a href="${esc(r.profileUrl)}" target="_blank" rel="noopener noreferrer">Open public profile</a></p>` : ""}
-        ${r.notes ? `<p>${esc(r.notes)}</p>` : ""}
-        <p class="small">Updated ${esc(timeLabel(r.updatedAt))} · ${esc(r.updatedBy || "")}</p>
-        <div class="grid">
-          <div><label>Change status</label><select id="status-${esc(r.id)}">
-            ${["Pending","In progress","Recovered (manually verified)","Unable to verify","Closed"].map(s => `<option ${s===r.status?"selected":""}>${esc(s)}</option>`).join("")}
-          </select></div>
-          <div style="align-self:end"><button data-update="${esc(r.id)}" class="secondary">Save status</button> <button data-delete="${esc(r.id)}" class="danger">Delete</button></div>
-        </div>
-      </article>`).join("") : '<p class="small">No records yet.</p>';
-  }, () => showMessage("dataMessage", "Could not read records. Verify published Firestore rules and admin email."));
-  stopHistory = onSnapshot(query(collection(db, "history"), orderBy("createdAt", "desc"), limit(30)), snap => {
-    $("history").innerHTML = snap.empty ? '<p class="small">No activity yet.</p>' : snap.docs.map(d => {
-      const h = d.data();
-      return `<div class="record"><strong>${esc(h.action)}</strong><p>${esc(h.details)}</p><p class="small">${esc(h.actor)} · ${esc(timeLabel(h.createdAt))}</p></div>`;
-    }).join("");
-  }, () => $("history").innerHTML = '<p class="small">Activity unavailable. Check Firestore rules.</p>');
+
+  stopRecords = onSnapshot(
+    query(
+      collection(db, "dashboard"),
+      orderBy("updatedAt", "desc")
+    ),
+    snapshot => {
+      cachedRecords = snapshot.docs.map(document => ({
+        id: document.id,
+        ...document.data()
+      }));
+
+      $("total").textContent = cachedRecords.length;
+      $("progress").textContent = cachedRecords.filter(
+        item => item.status === "In progress"
+      ).length;
+      $("recovered").textContent = cachedRecords.filter(
+        item => (item.status || "").startsWith("Recovered")
+      ).length;
+      $("review").textContent = cachedRecords.filter(
+        item => ["Needs review", "Unable to verify"].includes(item.status)
+      ).length;
+
+      renderRecords();
+    },
+    error => showMessage(
+      "dataMessage",
+      "Could not read records. Verify Firestore rules and admin access."
+    )
+  );
+
+  stopHistory = onSnapshot(
+    query(
+      collection(db, "history"),
+      orderBy("createdAt", "desc"),
+      limit(30)
+    ),
+    snapshot => {
+      $("history").innerHTML = snapshot.empty
+        ? '<div class="empty">No activity yet.</div>'
+        : snapshot.docs.map(document => {
+            const item = document.data();
+            return `
+              <div class="activity-item">
+                <span class="activity-dot"></span>
+                <div>
+                  <strong>${esc(item.action)}</strong>
+                  <p>${esc(item.details)}</p>
+                  <div class="small">
+                    ${esc(item.actor)} · ${esc(timeLabel(item.createdAt))}
+                  </div>
+                </div>
+              </div>`;
+          }).join("");
+    },
+    error => {
+      $("history").innerHTML =
+        '<p class="small">Activity unavailable. Check Firestore rules.</p>';
+    }
+  );
 }
-$("records").addEventListener("click", async e => {
-  const updateId = e.target.dataset.update, deleteId = e.target.dataset.delete;
-  if (updateId) {
-    const r = doc(db, "dashboard", updateId);
-    const status = $(`status-${updateId}`).value;
-    const name = $(`status-${updateId}`).closest(".record").querySelector("strong").textContent;
-    try {
-      await setDoc(r, {status, updatedAt:serverTimestamp(), updatedBy:currentUser.email}, {merge:true});
-      await logActivity("Status changed", `${name} — ${status}`);
-      showMessage("dataMessage", "Status updated.");
-    } catch { showMessage("dataMessage", "Update failed. Check rules and connectivity."); }
-  }
-  if (deleteId && confirm("Delete this record?")) {
-    try {
-      const name = e.target.closest(".record").querySelector("strong").textContent;
-      await deleteDoc(doc(db, "dashboard", deleteId));
-      await logActivity("Record deleted", name);
-    } catch { showMessage("dataMessage", "Delete failed. Check rules."); }
-  }
-});
+
 onAuthStateChanged(auth, user => {
-  currentUser = user && user.email?.toLowerCase() === ADMIN_EMAIL ? user : null;
+  currentUser =
+    user && user.email?.toLowerCase() === ADMIN_EMAIL
+      ? user : null;
+
   if (user && !currentUser) signOut(auth);
+
   $("login").classList.toggle("hidden", !!currentUser);
   $("app").classList.toggle("hidden", !currentUser);
   $("signOut").classList.toggle("hidden", !currentUser);
-  $("session").textContent = currentUser ? `Signed in: ${currentUser.email}` : "Signed out";
-  if (currentUser) watchData();
-  else {
+  $("session").textContent = currentUser
+    ? `Signed in · ${currentUser.email}`
+    : "Signed out";
+
+  if (currentUser) {
+    watchData();
+  } else {
     if (stopRecords) stopRecords();
     if (stopHistory) stopHistory();
+    cachedRecords = [];
     $("records").innerHTML = "";
     $("history").innerHTML = "";
   }
