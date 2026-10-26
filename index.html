@@ -1,552 +1,186 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#07130f">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Recovery Live Support</title>
 <style>
-:root {
-  color-scheme: dark;
-  --bg: #07130f;
-  --panel: #102019;
-  --line: #294536;
-  --green: #55f29b;
-  --muted: #a2b8aa;
-  --text: #f0fff5;
-}
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: radial-gradient(ellipse at top, #123522, var(--bg) 60%);
-  color: var(--text);
-  font: 15px/1.5 system-ui, sans-serif;
-}
-header {
-  padding: 18px;
-  border-bottom: 1px solid var(--line);
-  background: #0b1912;
-}
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
-}
-.brand { color: var(--green); font-weight: 800; font-size: 20px; }
-.subtitle { color: var(--muted); font-size: 12px; }
-h2 { margin-bottom: 5px; }
-p { color: var(--muted); }
-.card {
-  padding: 20px;
-  margin: 16px 0;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--panel);
-  overflow-wrap: anywhere;
-}
-.status {
-  padding: 15px;
-  margin: 12px 0;
-  border-radius: 12px;
-  border: 1px solid var(--line);
-  background: #091710;
-}
-#statusName { font-size: 24px; font-weight: 800; color: var(--green); }
-label { display: block; margin: 14px 0 6px; }
-input, select, textarea {
-  width: 100%;
-  padding: 12px;
-  color: var(--text);
-  background: #07130f;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  font: inherit;
-}
-input[type="file"] { font-size: 13px; }
-textarea { min-height: 75px; resize: vertical; }
-button {
-  padding: 11px 15px;
-  border: 0;
-  border-radius: 9px;
-  background: var(--green);
-  color: #062013;
-  font-weight: 800;
-  cursor: pointer;
-  margin: 12px 6px 0 0;
-}
-button.secondary {
-  background: #1c3527;
-  border: 1px solid var(--line);
-  color: white;
-}
-button.danger {
-  background: #381b1b;
-  border: 1px solid #703b3b;
-  color: #ffd5d5;
-}
-.profile-row {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-#profilePhoto {
-  width: 96px;
-  height: 96px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid var(--green);
-  background: #091710;
-}
-#profileLink { color: var(--green); overflow-wrap: anywhere; }
-.history-item {
-  border-left: 3px solid var(--green);
-  padding: 10px 12px;
-  margin: 12px 0;
-  background: #0a1710;
-}
-.small { font-size: 12px; color: var(--muted); }
-footer {
-  text-align: center;
-  padding: 20px;
-  color: var(--muted);
-  font-size: 12px;
-}
-#toast {
-  display: none;
-  position: fixed;
-  left: 50%;
-  bottom: 18px;
-  transform: translateX(-50%);
-  width: max-content;
-  max-width: calc(100% - 30px);
-  padding: 12px 16px;
-  background: #163b27;
-  border: 1px solid #3e8d5d;
-  border-radius: 10px;
-  box-shadow: 0 8px 28px #0008;
-  z-index: 10;
-}
-#toast.show { display: block; }
+:root{color-scheme:light;--bg:#f4f6fa;--card:#fff;--ink:#172033;--muted:#687386;--line:#e1e6ef;--accent:#2463eb;--green:#16865c;--red:#c83d4b}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px system-ui,-apple-system,Arial,sans-serif}
+header{background:#111827;color:white;padding:20px 5%;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:20px;margin:0}header p{margin:4px 0 0;color:#cbd5e1;font-size:13px}
+main{max-width:1100px;margin:26px auto;padding:0 16px}.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:18px;box-shadow:0 4px 18px #15264a0a}
+h2{font-size:17px;margin:0 0 14px}label{display:block;font-size:13px;color:var(--muted);margin:10px 0 5px}
+input,select,button{font:inherit;border-radius:9px;padding:11px 12px}input,select{width:100%;border:1px solid var(--line);background:white;color:var(--ink)}
+button{border:0;background:var(--accent);color:white;font-weight:600;cursor:pointer}button.secondary{background:#e9eef8;color:#23314b}button.danger{background:var(--red)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.small{font-size:13px;color:var(--muted)}.hidden{display:none!important}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:12px}.stat{border:1px solid var(--line);border-radius:12px;padding:15px;background:#fbfcff}.stat strong{display:block;font-size:25px}.stat span{font-size:12px;color:var(--muted)}
+.record{border:1px solid var(--line);border-radius:12px;padding:15px;margin-top:12px}.record-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.pill{font-size:12px;background:#e8f7ef;color:#137448;border-radius:99px;padding:5px 9px}.pill.pending{background:#fff4d8;color:#805b00}.pill.issue{background:#ffe8eb;color:#a22636}
+a{color:var(--accent);overflow-wrap:anywhere}footer{text-align:center;color:var(--muted);font-size:12px;padding:20px}
 </style>
 </head>
 <body>
-
-<header>
-  <div class="container">
-    <div class="brand">RECOVERY LIVE SUPPORT</div>
-    <div class="subtitle">ACCOUNT RECOVERY PROGRESS DASHBOARD</div>
-  </div>
-</header>
-
-<main class="container">
-  <h2>Recovery Dashboard</h2>
-  <p>Account profile, recovery progress, at status history sa iisang dashboard.</p>
-
-  <section class="card">
-    <h3>Facebook Account Profile</h3>
-    <div class="profile-row">
-      <img id="profilePhoto"
-        src="https://placehold.co/100x100/102019/55f29b?text=PROFILE"
-        alt="Account profile photo">
-      <div style="flex:1;min-width:180px">
-        <strong id="profileName">Account owner</strong>
-        <p id="profileStatus">Profile details not yet added</p>
-        <a id="profileLink" href="#"
-          target="_blank" rel="noopener noreferrer"
-          style="display:none">Open Facebook profile</a>
-      </div>
-    </div>
-
-    <label for="accountName">Account name</label>
-    <input id="accountName" maxlength="100"
-      placeholder="Pangalan ng account owner">
-
-    <label for="accountLink">Facebook profile URL</label>
-    <input id="accountLink" type="url"
-      placeholder="https://www.facebook.com/..."
-      autocomplete="url">
-
-    <label for="photoUrl">Profile photo URL (optional)</label>
-    <input id="photoUrl" type="url"
-      placeholder="HTTPS image URL">
-
-    <label for="photoUpload">O pumili ng profile photo sa device</label>
-    <input id="photoUpload" type="file" accept="image/*">
-
-    <button id="saveProfile">Save Profile</button>
-    <p class="small">Ang profile details at larawan ay naka-save lamang sa browser na ito.</p>
-  </section>
-
-  <section class="card">
-    <h3>Current Recovery Status</h3>
-    <div class="status">
-      <div id="statusName">Pending</div>
-      <div id="statusDescription">Naghihintay ng status update.</div>
-      <p class="small">Last updated: <span id="lastUpdated">Not yet updated</span></p>
-    </div>
-
-    <button id="enableNotifications">Enable Notifications</button>
-    <button id="testNotification" class="secondary">Test Notification</button>
-
-    <p class="small">
-      Gumagana ang browser notification kapag pinayagan ito ng browser.
-      Hindi ito awtomatikong nagbabasa ng Facebook recovery status.
-    </p>
-  </section>
-
-  <section class="card">
-    <h3>Update Recovery Status</h3>
-
-    <label for="caseRef">Case reference (optional)</label>
-    <input id="caseRef" maxlength="50"
-      placeholder="Hal. REC-2026-001">
-
-    <label for="newStatus">New status</label>
-    <select id="newStatus">
-      <option>Pending</option>
-      <option>In Progress</option>
-      <option>Recovered</option>
-      <option>Unable to Verify</option>
-    </select>
-
-    <label for="note">Update note</label>
-    <textarea id="note" maxlength="240"
-      placeholder="Maikling tala tungkol sa status update"></textarea>
-
-    <button id="saveStatus">Save Status</button>
-    <button id="clearHistory" class="secondary">Clear History</button>
-
-    <p class="small">
-      Huwag maglagay ng password, OTP, recovery code, o sensitibong personal na impormasyon.
-    </p>
-  </section>
-
-  <section class="card">
-    <h3>Status History</h3>
-    <div id="history"></div>
-  </section>
-
-  <p class="small">
-    Independent progress tracker. Hindi opisyal na produkto ng Facebook o Meta.
-    Ang “Recovered” ay isang status record na manwal na inilagay sa dashboard.
-  </p>
+<header><div><h1>Recovery Live Support</h1><p>Shared case status dashboard</p></div><div id="session" class="small">Signed out</div></header>
+<main>
+<section id="login" class="card">
+<h2>Admin sign in</h2>
+<p class="small">Use the dashboard account created in Firebase Authentication. This is not your Facebook login.</p>
+<label>Email</label><input id="email" type="email" autocomplete="username" placeholder="Admin email">
+<label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Dashboard password">
+<div class="row" style="margin-top:14px"><button id="signIn">Sign in</button><button id="signOut" class="secondary hidden">Sign out</button></div>
+<p id="authMessage" role="status" class="small"></p>
+</section>
+<section id="app" class="hidden">
+<div class="stats">
+<div class="stat"><strong id="total">0</strong><span>Total records</span></div>
+<div class="stat"><strong id="progress">0</strong><span>In progress</span></div>
+<div class="stat"><strong id="recovered">0</strong><span>Marked recovered</span></div>
+</div>
+<section class="card" style="margin-top:18px">
+<h2>Add a case record</h2>
+<form id="recordForm">
+<div class="grid">
+<div><label>Display name / reference</label><input id="caseName" maxlength="100" required placeholder="Case reference"></div>
+<div><label>Public profile URL (optional)</label><input id="profileUrl" type="url" placeholder="https://www.facebook.com/..."></div>
+<div><label>Status</label><select id="caseStatus"><option>Pending</option><option>In progress</option><option>Recovered (manually verified)</option><option>Unable to verify</option><option>Closed</option></select></div>
+</div>
+<label>Notes (do not enter passwords or verification codes)</label><input id="caseNotes" maxlength="500" placeholder="Brief case notes">
+<div style="margin-top:14px"><button type="submit">Add record</button></div>
+</form>
+<p id="dataMessage" role="status" class="small"></p>
+</section>
+<section class="card"><h2>Case records</h2><div id="records"><p class="small">Loading records…</p></div></section>
+<section class="card"><h2>Recent activity</h2><div id="history"><p class="small">Loading activity…</p></div></section>
+</section>
 </main>
+<footer>Shared records update across signed-in devices. Facebook recovery status is not automatically detected; statuses must be manually verified.</footer>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, addDoc, deleteDoc, onSnapshot, serverTimestamp, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/13.1.0/firebase-firestore.js";
 
-<footer>
-  Recovery Live Support · Independent progress tracker
-</footer>
-
-<div id="toast" role="status" aria-live="polite"></div>
-
-<script>
-(() => {
-  "use strict";
-
-  const HISTORY_KEY = "recovery-dashboard-history-v2";
-  const PROFILE_KEY = "recovery-dashboard-profile-v2";
-  const MAX_HISTORY = 100;
-  const $ = id => document.getElementById(id);
-
-  const descriptions = {
-    "Pending": "Naghihintay ng status update.",
-    "In Progress": "May recovery follow-up na isinasagawa.",
-    "Recovered": "Minarkahang recovered. Kumpirmahin sa opisyal na Facebook.",
-    "Unable to Verify": "Hindi pa makumpirma ang recovery result."
-  };
-
-  function loadHistory() {
-    try {
-      const data = JSON.parse(localStorage.getItem(HISTORY_KEY));
-      if (data && Array.isArray(data.history) && data.history.length) {
-        return data;
-      }
-    } catch (_) {}
-
-    const now = new Date().toISOString();
-    return {
-      status: "Pending",
-      updated: now,
-      history: [{
-        status: "Pending",
-        note: "Tracking record created.",
-        time: now,
-        ref: ""
-      }]
-    };
-  }
-
-  function loadProfile() {
-    try {
-      const data = JSON.parse(localStorage.getItem(PROFILE_KEY));
-      if (data && typeof data === "object") return data;
-    } catch (_) {}
-    return { name: "", link: "", photo: "" };
-  }
-
-  let state = loadHistory();
-  let profile = loadProfile();
-
-  function persist(key, value) {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-      return true;
-    } catch (_) {
-      showToast("Hindi ma-save. Baka puno na ang browser storage.");
-      return false;
+const firebaseConfig = {
+  apiKey: "AIzaSyAbZZ1AqzgRiaykmzqf_l8hpO-_WuxhVeY",
+  authDomain: "recovery-live-support.firebaseapp.com",
+  projectId: "recovery-live-support",
+  storageBucket: "recovery-live-support.firebasestorage.app",
+  messagingSenderId: "25419972015",
+  appId: "1:25419972015:web:035bd8d7f7dacfda06435a",
+  measurementId: "G-1PHQWDB811"
+};
+const ADMIN_EMAIL = "tarantadok366@gmail.com".toLowerCase();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const $ = id => document.getElementById(id);
+let stopRecords = null, stopHistory = null, currentUser = null;
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const statusClass = s => s.startsWith("Recovered") ? "" : s === "In progress" ? "pending" : "issue";
+const showMessage = (id, msg) => { $(id).textContent = msg; };
+function timeLabel(ts) {
+  if (!ts?.toDate) return "Just now";
+  return ts.toDate().toLocaleString();
+}
+async function logActivity(action, details) {
+  await addDoc(collection(db, "history"), {
+    action, details, actor: currentUser.email, createdAt: serverTimestamp()
+  });
+}
+$("signIn").addEventListener("click", async () => {
+  showMessage("authMessage", "");
+  const email = $("email").value.trim().toLowerCase();
+  if (email !== ADMIN_EMAIL) return showMessage("authMessage", "This email is not configured as the dashboard admin.");
+  try {
+    await signInWithEmailAndPassword(auth, email, $("password").value);
+    $("password").value = "";
+  } catch (e) { showMessage("authMessage", "Sign-in failed. Check the dashboard email/password and Firebase Authentication setup."); }
+});
+$("signOut").addEventListener("click", () => signOut(auth));
+$("recordForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!currentUser) return;
+  try {
+    const name = $("caseName").value.trim();
+    const url = $("profileUrl").value.trim();
+    if (url && !/^https:\/\/(www\.)?facebook\.com\//i.test(url)) {
+      return showMessage("dataMessage", "Use a public Facebook profile URL or leave this field blank.");
     }
-  }
-
-  function formatDate(value) {
-    const d = new Date(value);
-    return isNaN(d.getTime()) ? "Unknown time" : d.toLocaleString();
-  }
-
-  function showToast(message) {
-    const el = $("toast");
-    el.textContent = message;
-    el.classList.add("show");
-    clearTimeout(showToast.timer);
-    showToast.timer = setTimeout(() => el.classList.remove("show"), 3500);
-  }
-
-  function validFacebookUrl(value) {
-    try {
-      const url = new URL(value);
-      return url.protocol === "https:" &&
-        ["facebook.com", "www.facebook.com", "m.facebook.com"].includes(
-          url.hostname.toLowerCase()
-        );
-    } catch (_) {
-      return false;
-    }
-  }
-
-  function validImageUrl(value) {
-    if (!value) return true;
-    try {
-      return new URL(value).protocol === "https:";
-    } catch (_) {
-      return false;
-    }
-  }
-
-  function renderProfile() {
-    $("profileName").textContent = profile.name || "Account owner";
-    $("profileStatus").textContent =
-      "Recovery status: " + state.status;
-
-    const link = $("profileLink");
-    if (profile.link && validFacebookUrl(profile.link)) {
-      link.href = profile.link;
-      link.style.display = "inline";
-    } else {
-      link.removeAttribute("href");
-      link.style.display = "none";
-    }
-
-    $("profilePhoto").src = profile.photo ||
-      "https://placehold.co/100x100/102019/55f29b?text=PROFILE";
-
-    $("accountName").value = profile.name || "";
-    $("accountLink").value = profile.link || "";
-    $("photoUrl").value =
-      profile.photo && profile.photo.startsWith("https://")
-        ? profile.photo : "";
-  }
-
-  function renderHistory() {
-    $("statusName").textContent = state.status;
-    $("statusDescription").textContent =
-      descriptions[state.status] || "Status updated.";
-    $("lastUpdated").textContent =
-      state.updated ? formatDate(state.updated) : "Not yet updated";
-
-    const history = $("history");
-    history.replaceChildren();
-
-    state.history.slice().reverse().forEach(item => {
-      const row = document.createElement("div");
-      row.className = "history-item";
-
-      const title = document.createElement("strong");
-      title.textContent = item.status;
-
-      const time = document.createElement("div");
-      time.className = "small";
-      time.textContent = formatDate(item.time);
-
-      const note = document.createElement("p");
-      note.textContent = item.note || "No additional note.";
-
-      row.append(title, time, note);
-
-      if (item.ref) {
-        const ref = document.createElement("div");
-        ref.className = "small";
-        ref.textContent = "Case reference: " + item.ref;
-        row.appendChild(ref);
-      }
-
-      history.appendChild(row);
+    const ref = doc(collection(db, "dashboard"));
+    const status = $("caseStatus").value;
+    await setDoc(ref, {
+      name, profileUrl: url, status, notes: $("caseNotes").value.trim(),
+      updatedAt: serverTimestamp(), updatedBy: currentUser.email
     });
-  }
-
-  function render() {
-    renderProfile();
-    renderHistory();
-  }
-
-  async function notify(title, message) {
-    if (!("Notification" in window)) {
-      showToast(message);
-      return;
-    }
-
-    if (Notification.permission === "granted") {
-      try {
-        new Notification(title, {
-          body: message,
-          tag: "recovery-status"
-        });
-      } catch (_) {
-        showToast(message);
-      }
-    } else {
-      showToast(message + " I-enable muna ang notifications.");
-    }
-  }
-
-  $("saveProfile").addEventListener("click", () => {
-    const name = $("accountName").value.trim();
-    const link = $("accountLink").value.trim();
-    const photoUrl = $("photoUrl").value.trim();
-
-    if (link && !validFacebookUrl(link)) {
-      alert("Gumamit ng valid na HTTPS Facebook profile URL.");
-      return;
-    }
-
-    if (photoUrl && !validImageUrl(photoUrl)) {
-      alert("Ang photo URL ay kailangang gumamit ng HTTPS.");
-      return;
-    }
-
-    profile = {
-      name: name.slice(0, 100),
-      link,
-      photo: photoUrl || profile.photo || ""
-    };
-
-    if (persist(PROFILE_KEY, profile)) {
-      renderProfile();
-      showToast("Na-save ang account profile.");
-    }
-  });
-
-  $("photoUpload").addEventListener("change", event => {
-    const file = event.target.files && event.target.files[0];
-    if (!file) return;
-
-    if (!file.type.startsWith("image/") || file.size > 2 * 1024 * 1024) {
-      alert("Pumili ng image na hindi lalampas sa 2 MB.");
-      event.target.value = "";
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      profile.photo = reader.result;
-      if (persist(PROFILE_KEY, profile)) {
-        renderProfile();
-        showToast("Na-save ang profile photo sa browser.");
-      }
-    };
-
-    reader.onerror = () => alert("Hindi mabasa ang image file.");
-    reader.readAsDataURL(file);
-  });
-
-  $("enableNotifications").addEventListener("click", async () => {
-    if (!("Notification" in window)) {
-      alert("Hindi suportado ng browser ang notifications.");
-      return;
-    }
-
+    await logActivity("Record added", `${name} — ${status}`);
+    $("recordForm").reset();
+    showMessage("dataMessage", "Record added.");
+  } catch (e) { showMessage("dataMessage", "Could not save. Check Firestore rules and connection."); }
+});
+function watchData() {
+  if (stopRecords) stopRecords();
+  if (stopHistory) stopHistory();
+  stopRecords = onSnapshot(query(collection(db, "dashboard"), orderBy("updatedAt", "desc")), snap => {
+    const docs = snap.docs.map(d => ({id:d.id,...d.data()}));
+    $("total").textContent = docs.length;
+    $("progress").textContent = docs.filter(x => x.status === "In progress").length;
+    $("recovered").textContent = docs.filter(x => x.status.startsWith("Recovered")).length;
+    $("records").innerHTML = docs.length ? docs.map(r => `
+      <article class="record">
+        <div class="record-top"><strong>${esc(r.name)}</strong><span class="pill ${statusClass(r.status)}">${esc(r.status)}</span></div>
+        ${r.profileUrl ? `<p><a href="${esc(r.profileUrl)}" target="_blank" rel="noopener noreferrer">Open public profile</a></p>` : ""}
+        ${r.notes ? `<p>${esc(r.notes)}</p>` : ""}
+        <p class="small">Updated ${esc(timeLabel(r.updatedAt))} · ${esc(r.updatedBy || "")}</p>
+        <div class="grid">
+          <div><label>Change status</label><select id="status-${esc(r.id)}">
+            ${["Pending","In progress","Recovered (manually verified)","Unable to verify","Closed"].map(s => `<option ${s===r.status?"selected":""}>${esc(s)}</option>`).join("")}
+          </select></div>
+          <div style="align-self:end"><button data-update="${esc(r.id)}" class="secondary">Save status</button> <button data-delete="${esc(r.id)}" class="danger">Delete</button></div>
+        </div>
+      </article>`).join("") : '<p class="small">No records yet.</p>';
+  }, () => showMessage("dataMessage", "Could not read records. Verify published Firestore rules and admin email."));
+  stopHistory = onSnapshot(query(collection(db, "history"), orderBy("createdAt", "desc"), limit(30)), snap => {
+    $("history").innerHTML = snap.empty ? '<p class="small">No activity yet.</p>' : snap.docs.map(d => {
+      const h = d.data();
+      return `<div class="record"><strong>${esc(h.action)}</strong><p>${esc(h.details)}</p><p class="small">${esc(h.actor)} · ${esc(timeLabel(h.createdAt))}</p></div>`;
+    }).join("");
+  }, () => $("history").innerHTML = '<p class="small">Activity unavailable. Check Firestore rules.</p>');
+}
+$("records").addEventListener("click", async e => {
+  const updateId = e.target.dataset.update, deleteId = e.target.dataset.delete;
+  if (updateId) {
+    const r = doc(db, "dashboard", updateId);
+    const status = $(`status-${updateId}`).value;
+    const name = $(`status-${updateId}`).closest(".record").querySelector("strong").textContent;
     try {
-      const result = await Notification.requestPermission();
-      showToast(result === "granted"
-        ? "Pinayagan ang browser notifications."
-        : "Hindi pinayagan ang notifications.");
-    } catch (_) {
-      showToast("Hindi ma-enable ang notifications.");
-    }
-  });
-
-  $("testNotification").addEventListener("click", () => {
-    notify(
-      "Recovery dashboard test",
-      "Test notification lamang. Walang Facebook status na na-check."
-    );
-  });
-
-  $("saveStatus").addEventListener("click", async () => {
-    const previousStatus = state.status;
-    const newStatus = $("newStatus").value;
-    const now = new Date().toISOString();
-
-    state.status = newStatus;
-    state.updated = now;
-    state.history.push({
-      status: newStatus,
-      note: $("note").value.trim() || "Status manually updated.",
-      time: now,
-      ref: $("caseRef").value.trim().slice(0, 50)
-    });
-
-    state.history = state.history.slice(-MAX_HISTORY);
-
-    if (!persist(HISTORY_KEY, state)) return;
-
-    $("note").value = "";
-    render();
-
-    if (newStatus === "Recovered" && previousStatus !== "Recovered") {
-      await notify(
-        "Recovery status updated",
-        (profile.name ? profile.name + ": " : "") +
-        "Minarkahang Recovered. Kumpirmahin sa opisyal na Facebook."
-      );
-    } else {
-      showToast("Na-save ang status update.");
-    }
-  });
-
-  $("clearHistory").addEventListener("click", () => {
-    if (!confirm("Burahin ang status history sa browser na ito?")) return;
-
-    const now = new Date().toISOString();
-    state = {
-      status: "Pending",
-      updated: now,
-      history: [{
-        status: "Pending",
-        note: "Local history reset.",
-        time: now,
-        ref: ""
-      }]
-    };
-
-    if (persist(HISTORY_KEY, state)) {
-      render();
-      showToast("Na-clear ang status history.");
-    }
-  });
-
-  render();
-})();
+      await setDoc(r, {status, updatedAt:serverTimestamp(), updatedBy:currentUser.email}, {merge:true});
+      await logActivity("Status changed", `${name} — ${status}`);
+      showMessage("dataMessage", "Status updated.");
+    } catch { showMessage("dataMessage", "Update failed. Check rules and connectivity."); }
+  }
+  if (deleteId && confirm("Delete this record?")) {
+    try {
+      const name = e.target.closest(".record").querySelector("strong").textContent;
+      await deleteDoc(doc(db, "dashboard", deleteId));
+      await logActivity("Record deleted", name);
+    } catch { showMessage("dataMessage", "Delete failed. Check rules."); }
+  }
+});
+onAuthStateChanged(auth, user => {
+  currentUser = user && user.email?.toLowerCase() === ADMIN_EMAIL ? user : null;
+  if (user && !currentUser) signOut(auth);
+  $("login").classList.toggle("hidden", !!currentUser);
+  $("app").classList.toggle("hidden", !currentUser);
+  $("signOut").classList.toggle("hidden", !currentUser);
+  $("session").textContent = currentUser ? `Signed in: ${currentUser.email}` : "Signed out";
+  if (currentUser) watchData();
+  else {
+    if (stopRecords) stopRecords();
+    if (stopHistory) stopHistory();
+    $("records").innerHTML = "";
+    $("history").innerHTML = "";
+  }
+});
 </script>
 </body>
-  </html>
-  
+</html>
