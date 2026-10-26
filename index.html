@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#07130f">
+<title>Recovery Live Support</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #07130f;
+  --panel: #102019;
+  --line: #294536;
+  --green: #55f29b;
+  --muted: #a2b8aa;
+  --text: #f0fff5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: radial-gradient(ellipse at top, #123522, var(--bg) 60%);
+  color: var(--text);
+  font: 15px/1.5 system-ui, sans-serif;
+}
+header {
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+  background: #0b1912;
+}
+.container {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+.brand { color: var(--green); font-weight: 800; font-size: 20px; }
+.subtitle { color: var(--muted); font-size: 12px; }
+h2 { margin-bottom: 5px; }
+p { color: var(--muted); }
+.card {
+  padding: 20px;
+  margin: 16px 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--panel);
+  overflow-wrap: anywhere;
+}
+.status {
+  padding: 15px;
+  margin: 12px 0;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: #091710;
+}
+#statusName { font-size: 24px; font-weight: 800; color: var(--green); }
+label { display: block; margin: 14px 0 6px; }
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  color: var(--text);
+  background: #07130f;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font: inherit;
+}
+input[type="file"] { font-size: 13px; }
+textarea { min-height: 75px; resize: vertical; }
+button {
+  padding: 11px 15px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--green);
+  color: #062013;
+  font-weight: 800;
+  cursor: pointer;
+  margin: 12px 6px 0 0;
+}
+button.secondary {
+  background: #1c3527;
+  border: 1px solid var(--line);
+  color: white;
+}
+button.danger {
+  background: #381b1b;
+  border: 1px solid #703b3b;
+  color: #ffd5d5;
+}
+.profile-row {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+#profilePhoto {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--green);
+  background: #091710;
+}
+#profileLink { color: var(--green); overflow-wrap: anywhere; }
+.history-item {
+  border-left: 3px solid var(--green);
+  padding: 10px 12px;
+  margin: 12px 0;
+  background: #0a1710;
+}
+.small { font-size: 12px; color: var(--muted); }
+footer {
+  text-align: center;
+  padding: 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
+#toast {
+  display: none;
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 30px);
+  padding: 12px 16px;
+  background: #163b27;
+  border: 1px solid #3e8d5d;
+  border-radius: 10px;
+  box-shadow: 0 8px 28px #0008;
+  z-index: 10;
+}
+#toast.show { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="brand">RECOVERY LIVE SUPPORT</div>
+    <div class="subtitle">ACCOUNT RECOVERY PROGRESS DASHBOARD</div>
+  </div>
+</header>
+
+<main class="container">
+  <h2>Recovery Dashboard</h2>
+  <p>Account profile, recovery progress, at status history sa iisang dashboard.</p>
+
+  <section class="card">
+    <h3>Facebook Account Profile</h3>
+    <div class="profile-row">
+      <img id="profilePhoto"
+        src="https://placehold.co/100x100/102019/55f29b?text=PROFILE"
+        alt="Account profile photo">
+      <div style="flex:1;min-width:180px">
+        <strong id="profileName">Account owner</strong>
+        <p id="profileStatus">Profile details not yet added</p>
+        <a id="profileLink" href="#"
+          target="_blank" rel="noopener noreferrer"
+          style="display:none">Open Facebook profile</a>
+      </div>
+    </div>
+
+    <label for="accountName">Account name</label>
+    <input id="accountName" maxlength="100"
+      placeholder="Pangalan ng account owner">
+
+    <label for="accountLink">Facebook profile URL</label>
+    <input id="accountLink" type="url"
+      placeholder="https://www.facebook.com/..."
+      autocomplete="url">
+
+    <label for="photoUrl">Profile photo URL (optional)</label>
+    <input id="photoUrl" type="url"
+      placeholder="HTTPS image URL">
+
+    <label for="photoUpload">O pumili ng profile photo sa device</label>
+    <input id="photoUpload" type="file" accept="image/*">
+
+    <button id="saveProfile">Save Profile</button>
+    <p class="small">Ang profile details at larawan ay naka-save lamang sa browser na ito.</p>
+  </section>
+
+  <section class="card">
+    <h3>Current Recovery Status</h3>
+    <div class="status">
+      <div id="statusName">Pending</div>
+      <div id="statusDescription">Naghihintay ng status update.</div>
+      <p class="small">Last updated: <span id="lastUpdated">Not yet updated</span></p>
+    </div>
+
+    <button id="enableNotifications">Enable Notifications</button>
+    <button id="testNotification" class="secondary">Test Notification</button>
+
+    <p class="small">
+      Gumagana ang browser notification kapag pinayagan ito ng browser.
+      Hindi ito awtomatikong nagbabasa ng Facebook recovery status.
+    </p>
+  </section>
+
+  <section class="card">
+    <h3>Update Recovery Status</h3>
+
+    <label for="caseRef">Case reference (optional)</label>
+    <input id="caseRef" maxlength="50"
+      placeholder="Hal. REC-2026-001">
+
+    <label for="newStatus">New status</label>
+    <select id="newStatus">
+      <option>Pending</option>
+      <option>In Progress</option>
+      <option>Recovered</option>
+      <option>Unable to Verify</option>
+    </select>
+
+    <label for="note">Update note</label>
+    <textarea id="note" maxlength="240"
+      placeholder="Maikling tala tungkol sa status update"></textarea>
+
+    <button id="saveStatus">Save Status</button>
+    <button id="clearHistory" class="secondary">Clear History</button>
+
+    <p class="small">
+      Huwag maglagay ng password, OTP, recovery code, o sensitibong personal na impormasyon.
+    </p>
+  </section>
+
+  <section class="card">
+    <h3>Status History</h3>
+    <div id="history"></div>
+  </section>
+
+  <p class="small">
+    Independent progress tracker. Hindi opisyal na produkto ng Facebook o Meta.
+    Ang “Recovered” ay isang status record na manwal na inilagay sa dashboard.
+  </p>
+</main>
+
+<footer>
+  Recovery Live Support · Independent progress tracker
+</footer>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  "use strict";
+
+  const HISTORY_KEY = "recovery-dashboard-history-v2";
+  const PROFILE_KEY = "recovery-dashboard-profile-v2";
+  const MAX_HISTORY = 100;
+  const $ = id => document.getElementById(id);
+
+  const descriptions = {
+    "Pending": "Naghihintay ng status update.",
+    "In Progress": "May recovery follow-up na isinasagawa.",
+    "Recovered": "Minarkahang recovered. Kumpirmahin sa opisyal na Facebook.",
+    "Unable to Verify": "Hindi pa makumpirma ang recovery result."
+  };
+
+  function loadHistory() {
+    try {
+      const data = JSON.parse(localStorage.getItem(HISTORY_KEY));
+      if (data && Array.isArray(data.history) && data.history.length) {
+        return data;
+      }
+    } catch (_) {}
+
+    const now = new Date().toISOString();
+    return {
+      status: "Pending",
+      updated: now,
+      history: [{
+        status: "Pending",
+        note: "Tracking record created.",
+        time: now,
+        ref: ""
+      }]
+    };
+  }
+
+  function loadProfile() {
+    try {
+      const data = JSON.parse(localStorage.getItem(PROFILE_KEY));
+      if (data && typeof data === "object") return data;
+    } catch (_) {}
+    return { name: "", link: "", photo: "" };
+  }
+
+  let state = loadHistory();
+  let profile = loadProfile();
+
+  function persist(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (_) {
+      showToast("Hindi ma-save. Baka puno na ang browser storage.");
+      return false;
+    }
+  }
+
+  function formatDate(value) {
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? "Unknown time" : d.toLocaleString();
+  }
+
+  function showToast(message) {
+    const el = $("toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(showToast.timer);
+    showToast.timer = setTimeout(() => el.classList.remove("show"), 3500);
+  }
+
+  function validFacebookUrl(value) {
+    try {
+      const url = new URL(value);
+      return url.protocol === "https:" &&
+        ["facebook.com", "www.facebook.com", "m.facebook.com"].includes(
+          url.hostname.toLowerCase()
+        );
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function validImageUrl(value) {
+    if (!value) return true;
+    try {
+      return new URL(value).protocol === "https:";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function renderProfile() {
+    $("profileName").textContent = profile.name || "Account owner";
+    $("profileStatus").textContent =
+      "Recovery status: " + state.status;
+
+    const link = $("profileLink");
+    if (profile.link && validFacebookUrl(profile.link)) {
+      link.href = profile.link;
+      link.style.display = "inline";
+    } else {
+      link.removeAttribute("href");
+      link.style.display = "none";
+    }
+
+    $("profilePhoto").src = profile.photo ||
+      "https://placehold.co/100x100/102019/55f29b?text=PROFILE";
+
+    $("accountName").value = profile.name || "";
+    $("accountLink").value = profile.link || "";
+    $("photoUrl").value =
+      profile.photo && profile.photo.startsWith("https://")
+        ? profile.photo : "";
+  }
+
+  function renderHistory() {
+    $("statusName").textContent = state.status;
+    $("statusDescription").textContent =
+      descriptions[state.status] || "Status updated.";
+    $("lastUpdated").textContent =
+      state.updated ? formatDate(state.updated) : "Not yet updated";
+
+    const history = $("history");
+    history.replaceChildren();
+
+    state.history.slice().reverse().forEach(item => {
+      const row = document.createElement("div");
+      row.className = "history-item";
+
+      const title = document.createElement("strong");
+      title.textContent = item.status;
+
+      const time = document.createElement("div");
+      time.className = "small";
+      time.textContent = formatDate(item.time);
+
+      const note = document.createElement("p");
+      note.textContent = item.note || "No additional note.";
+
+      row.append(title, time, note);
+
+      if (item.ref) {
+        const ref = document.createElement("div");
+        ref.className = "small";
+        ref.textContent = "Case reference: " + item.ref;
+        row.appendChild(ref);
+      }
+
+      history.appendChild(row);
+    });
+  }
+
+  function render() {
+    renderProfile();
+    renderHistory();
+  }
+
+  async function notify(title, message) {
+    if (!("Notification" in window)) {
+      showToast(message);
+      return;
+    }
+
+    if (Notification.permission === "granted") {
+      try {
+        new Notification(title, {
+          body: message,
+          tag: "recovery-status"
+        });
+      } catch (_) {
+        showToast(message);
+      }
+    } else {
+      showToast(message + " I-enable muna ang notifications.");
+    }
+  }
+
+  $("saveProfile").addEventListener("click", () => {
+    const name = $("accountName").value.trim();
+    const link = $("accountLink").value.trim();
+    const photoUrl = $("photoUrl").value.trim();
+
+    if (link && !validFacebookUrl(link)) {
+      alert("Gumamit ng valid na HTTPS Facebook profile URL.");
+      return;
+    }
+
+    if (photoUrl && !validImageUrl(photoUrl)) {
+      alert("Ang photo URL ay kailangang gumamit ng HTTPS.");
+      return;
+    }
+
+    profile = {
+      name: name.slice(0, 100),
+      link,
+      photo: photoUrl || profile.photo || ""
+    };
+
+    if (persist(PROFILE_KEY, profile)) {
+      renderProfile();
+      showToast("Na-save ang account profile.");
+    }
+  });
+
+  $("photoUpload").addEventListener("change", event => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/") || file.size > 2 * 1024 * 1024) {
+      alert("Pumili ng image na hindi lalampas sa 2 MB.");
+      event.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      profile.photo = reader.result;
+      if (persist(PROFILE_KEY, profile)) {
+        renderProfile();
+        showToast("Na-save ang profile photo sa browser.");
+      }
+    };
+
+    reader.onerror = () => alert("Hindi mabasa ang image file.");
+    reader.readAsDataURL(file);
+  });
+
+  $("enableNotifications").addEventListener("click", async () => {
+    if (!("Notification" in window)) {
+      alert("Hindi suportado ng browser ang notifications.");
+      return;
+    }
+
+    try {
+      const result = await Notification.requestPermission();
+      showToast(result === "granted"
+        ? "Pinayagan ang browser notifications."
+        : "Hindi pinayagan ang notifications.");
+    } catch (_) {
+      showToast("Hindi ma-enable ang notifications.");
+    }
+  });
+
+  $("testNotification").addEventListener("click", () => {
+    notify(
+      "Recovery dashboard test",
+      "Test notification lamang. Walang Facebook status na na-check."
+    );
+  });
+
+  $("saveStatus").addEventListener("click", async () => {
+    const previousStatus = state.status;
+    const newStatus = $("newStatus").value;
+    const now = new Date().toISOString();
+
+    state.status = newStatus;
+    state.updated = now;
+    state.history.push({
+      status: newStatus,
+      note: $("note").value.trim() || "Status manually updated.",
+      time: now,
+      ref: $("caseRef").value.trim().slice(0, 50)
+    });
+
+    state.history = state.history.slice(-MAX_HISTORY);
+
+    if (!persist(HISTORY_KEY, state)) return;
+
+    $("note").value = "";
+    render();
+
+    if (newStatus === "Recovered" && previousStatus !== "Recovered") {
+      await notify(
+        "Recovery status updated",
+        (profile.name ? profile.name + ": " : "") +
+        "Minarkahang Recovered. Kumpirmahin sa opisyal na Facebook."
+      );
+    } else {
+      showToast("Na-save ang status update.");
+    }
+  });
+
+  $("clearHistory").addEventListener("click", () => {
+    if (!confirm("Burahin ang status history sa browser na ito?")) return;
+
+    const now = new Date().toISOString();
+    state = {
+      status: "Pending",
+      updated: now,
+      history: [{
+        status: "Pending",
+        note: "Local history reset.",
+        time: now,
+        ref: ""
+      }]
+    };
+
+    if (persist(HISTORY_KEY, state)) {
+      render();
+      showToast("Na-clear ang status history.");
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+  </html>
+  
