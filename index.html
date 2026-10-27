@@ -618,8 +618,273 @@ $("loginForm").addEventListener("submit", async event => {
   const password = $("password").value;
 
   if (email !== ADMIN_EMAIL) {
-    showMessage("authMessage", "This email is not configured as the dashboard admin.");
+    showMessage(
+      "authMessage",
+      "This email is not configured as the dashboard admin."
+    );
     return;
   }
 
-  $("signIn"
+  const button = $("signIn");
+  button.disabled = true;
+  button.textContent = "Signing in…";
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    $("password").value = "";
+    showMessage("authMessage", "Sign-in successful.");
+  } catch (error) {
+    console.error("Firebase sign-in error:", error.code);
+
+    const messages = {
+      "auth/invalid-credential":
+        "Email o password ay hindi tinanggap. Suriin ang credentials o i-reset ang password.",
+      "auth/wrong-password":
+        "Mali ang password. Gamitin ang password-reset process.",
+      "auth/user-not-found":
+        "Hindi makita ang user na ito sa Firebase Authentication.",
+      "auth/invalid-email":
+        "Hindi valid ang email address.",
+      "auth/too-many-requests":
+        "Masyadong maraming pagtatangka. Maghintay muna bago sumubok ulit.",
+      "auth/network-request-failed":
+        "May problema sa koneksiyon. Suriin ang internet at subukan ulit.",
+      "auth/operation-not-allowed":
+        "Hindi naka-enable ang Email/Password provider sa Firebase."
+    };
+
+    showMessage(
+      "authMessage",
+      messages[error.code] ||
+        "Hindi nakapag-sign in. Suriin ang Firebase settings at browser console."
+    );
+  } finally {
+    button.disabled = false;
+    button.textContent = "Sign in securely";
+  }
+});
+
+$("signOut").addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+    showMessage("authMessage", "Signed out.");
+  } catch (error) {
+    console.error("Sign-out error:", error.code);
+    showMessage("authMessage", "Hindi nakapag-sign out. Subukan ulit.");
+  }
+});
+
+$("searchRecords").addEventListener("input", renderRecords);
+
+$("recordForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (!currentUser) {
+    showMessage("dataMessage", "Mag-sign in muna.");
+    return;
+  }
+
+  const button = event.submitter;
+  if (button) button.disabled = true;
+
+  try {
+    const data = {
+      name: $("caseName").value.trim(),
+      platform: $("platform").value,
+      caseType: $("caseType").value,
+      profileUrl: $("profileUrl").value.trim(),
+      status: $("caseStatus").value,
+      priority: $("priority").value,
+      dateOpened: $("dateOpened").value,
+      nextFollowUp: $("nextFollowUp").value,
+      owner: $("owner").value.trim(),
+      notes: $("caseNotes").value.trim(),
+      updatedBy: currentUser.email,
+      updatedAt: serverTimestamp(),
+      createdAt: serverTimestamp()
+    };
+
+    const ref = await addDoc(collection(db, "cases"), data);
+    await logActivity("Case created", data.name + " (" + ref.id + ")");
+
+    $("recordForm").reset();
+    showMessage("dataMessage", "Case record added.");
+  } catch (error) {
+    console.error("Create record error:", error.code);
+    showMessage(
+      "dataMessage",
+      "Hindi na-save ang record. Suriin ang Firestore security rules."
+    );
+  } finally {
+    if (button) button.disabled = false;
+  }
+});
+
+$("records").addEventListener("click", async event => {
+  const updateButton = event.target.closest("[data-update]");
+  const deleteButton = event.target.closest("[data-delete]");
+
+  if (!currentUser) return;
+
+  if (updateButton) {
+    const id = updateButton.dataset.update;
+    const select = document.getElementById("status-" + id);
+    if (!select) return;
+
+    updateButton.disabled = true;
+
+    try {
+      const record = cachedRecords.find(item => item.id === id);
+      if (!record) throw new Error("Record not found");
+
+      await setDoc(doc(db, "cases", id), {
+        status: select.value,
+        updatedBy: currentUser.email,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+
+      await logActivity(
+        "Status updated",
+        (record.name || id) + " → " + select.value
+      );
+
+      showMessage("dataMessage", "Status updated.");
+    } catch (error) {
+      console.error("Update error:", error.code);
+      showMessage(
+        "dataMessage",
+        "Hindi na-update ang status. Suriin ang Firestore rules."
+      );
+    } finally {
+      updateButton.disabled = false;
+    }
+  }
+
+  if (deleteButton) {
+    const id = deleteButton.dataset.delete;
+    const record = cachedRecords.find(item => item.id === id);
+    if (!record) return;
+
+    if (!confirm("Sigurado ka bang buburahin ang case na ito?")) return;
+
+    deleteButton.disabled = true;
+
+    try {
+      await deleteDoc(doc(db, "cases", id));
+      await logActivity(
+        "Case deleted",
+        record.name || id
+      );
+      showMessage("dataMessage", "Case deleted.");
+    } catch (error) {
+      console.error("Delete error:", error.code);
+      showMessage(
+        "dataMessage",
+        "Hindi nabura ang case. Suriin ang Firestore rules."
+      );
+    } finally {
+      deleteButton.disabled = false;
+    }
+  }
+});
+
+onAuthStateChanged(auth, async user => {
+  authGeneration++;
+  const generation = authGeneration;
+
+  if (stopRecords) {
+    stopRecords();
+    stopRecords = null;
+  }
+
+  if (stopHistory) {
+    stopHistory();
+    stopHistory = null;
+  }
+
+  currentUser = null;
+  cachedRecords = [];
+  renderRecords();
+
+  if (!user) {
+    $("session").textContent = "Signed out";
+    $("login").classList.remove("hidden");
+    $("app").classList.add("hidden");
+    $("signOut").classList.add("hidden");
+    $("signIn").classList.remove("hidden");
+    return;
+  }
+
+  if ((user.email || "").toLowerCase() !== ADMIN_EMAIL) {
+    await signOut(auth);
+    showMessage(
+      "authMessage",
+      "Hindi awtorisado ang account na ito para sa dashboard."
+    );
+    return;
+  }
+
+  currentUser = user;
+  $("session").textContent = "Signed in: " + user.email;
+  $("login").classList.remove("hidden");
+  $("app").classList.remove("hidden");
+  $("signOut").classList.remove("hidden");
+
+  $("records").innerHTML =
+    '<div class="empty">Loading records…</div>';
+  $("history").innerHTML =
+    '<p class="small">Loading activity…</p>';
+
+  stopRecords = onSnapshot(
+    query(collection(db, "cases"), orderBy("createdAt", "desc")),
+    snapshot => {
+      if (generation !== authGeneration) return;
+
+      cachedRecords = snapshot.docs.map(item => ({
+        id: item.id,
+        ...item.data()
+      }));
+
+      renderRecords();
+    },
+    error => {
+      console.error("Cases listener error:", error.code);
+      $("records").innerHTML =
+        '<div class="empty">Hindi ma-load ang records. Suriin ang Firestore security rules.</div>';
+    }
+  );
+
+  stopHistory = onSnapshot(
+    query(
+      collection(db, "history"),
+      orderBy("createdAt", "desc"),
+      limit(30)
+    ),
+    snapshot => {
+      if (generation !== authGeneration) return;
+
+      $("history").innerHTML = snapshot.empty
+        ? '<div class="empty">Wala pang activity.</div>'
+        : snapshot.docs.map(item => {
+            const entry = item.data();
+
+            return `
+              <div class="activity-item">
+                <div class="activity-dot"></div>
+                <div>
+                  <strong>${esc(entry.action || "Activity")}</strong>
+                  <p>${esc(entry.details || "")}</p>
+                  <p>${esc(entry.actor || "")} · ${esc(timeLabel(entry.createdAt))}</p>
+                </div>
+              </div>
+            `;
+          }).join("");
+    },
+    error => {
+      console.error("History listener error:", error.code);
+      $("history").innerHTML =
+        '<p class="small">Hindi ma-load ang activity. Suriin ang Firestore security rules.</p>';
+    }
+  );
+});
+  
